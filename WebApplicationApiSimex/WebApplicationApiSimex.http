@@ -1,0 +1,14 @@
+@WebApplicationApiSimex_HostAddress = https://localhost:7160
+
+GET {{WebApplicationApiSimex_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+GET {{WebApplicationApiSimex_HostAddress}}/api/usuaris
+
+###
+
+GET {{WebApplicationApiSimex_HostAddress}}/api/usuaris/resumen
+
+###
