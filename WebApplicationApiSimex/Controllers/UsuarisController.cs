@@ -121,5 +121,25 @@ namespace WebApplicationApiSimex.Controllers
 
             return Ok(resumen);
         }
+
+        // Solo muestra clientes
+        // GET: api/Usuaris/rol/3
+        [HttpGet("rol/{idRol}")]
+        public async Task<IActionResult> GetUsuariosPorRol(int idRol)
+        {
+            var usuarios = await _context.Usuaris
+                .Include(u => u.Rol)
+                .Where(u => u.RolId == idRol) 
+                .Select(u => new
+                {
+                    Nom = u.Nom,
+                    Cognoms = u.Cognoms,
+                    Empresa = u.Empresa,
+                    Rol = u.Rol.Rol1
+                })
+                .ToListAsync();
+
+            return Ok(usuarios);
+        }
     }
 }

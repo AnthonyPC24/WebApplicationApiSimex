@@ -12,3 +12,8 @@ GET {{WebApplicationApiSimex_HostAddress}}/api/usuaris
 GET {{WebApplicationApiSimex_HostAddress}}/api/usuaris/resumen
 
 ###
+
+@idRol=3
+GET {{WebApplicationApiSimex_HostAddress}}/api/usuaris/rol/{{idRol}}
+
+###
