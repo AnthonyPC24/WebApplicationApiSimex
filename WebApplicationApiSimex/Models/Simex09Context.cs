@@ -53,6 +53,8 @@ public partial class Simex09Context : DbContext
 
     public virtual DbSet<Usuari> Usuaris { get; set; }
 
+    public virtual DbSet<EstatEnvio> EstatsEnvio { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=51.83.192.177;Database=simex09;User Id=simex09;Password=Db@Secure_26!xP;TrustServerCertificate=True;");
@@ -253,6 +255,12 @@ public partial class Simex09Context : DbContext
             entity.HasOne(d => d.Transportista).WithMany(p => p.Ofertes)
                 .HasForeignKey(d => d.TransportistaId)
                 .HasConstraintName("FK_ofertes_transportistes");
+
+                entity.Property(e => e.EstatEnvioId).HasColumnName("estat_envio_id");
+
+            entity.HasOne(d => d.EstatEnvio).WithMany(p => p.Ofertes)
+                .HasForeignKey(d => d.EstatEnvioId)
+                .HasConstraintName("FK_ofertes_estats_envio");
         });
 
         modelBuilder.Entity<Paisso>(entity =>
@@ -425,6 +433,12 @@ public partial class Simex09Context : DbContext
                 .HasForeignKey(d => d.RolId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_usuaris_rols");
+        });
+
+        modelBuilder.Entity<EstatEnvio>(entity =>
+        {
+         entity.ToTable("estats_envio");
+            entity.Property(e => e.Nom).HasMaxLength(50);
         });
 
         OnModelCreatingPartial(modelBuilder);

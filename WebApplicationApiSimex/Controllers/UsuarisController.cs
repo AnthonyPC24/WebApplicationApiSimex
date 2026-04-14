@@ -141,5 +141,31 @@ namespace WebApplicationApiSimex.Controllers
 
             return Ok(usuarios);
         }
+[HttpPost("login")]
+public async Task<IActionResult> Login([FromBody] LoginRequest login)
+{
+    var user = await _context.Usuaris
+        .FirstOrDefaultAsync(u => u.Correu == login.Usuario 
+                              && u.Contrasenya == login.Password);
+
+    if (user == null)
+    {
+        return Unauthorized(); // 401
+    }
+
+    return Ok(user); // 200
+}
+[HttpGet("contadors/{operadorId}")]
+public async Task<IActionResult> GetContadors(int operadorId)
+{
+    var contadors = await _context.Ofertes
+        .Where(o => o.OperadorId == operadorId && o.EstatEnvioId != null)
+        .GroupBy(o => o.EstatEnvio!.Nom)
+        .Select(g => new { Estat = g.Key, Count = g.Count() })
+        .ToListAsync();
+
+    return Ok(contadors);
+}
+        
     }
 }
