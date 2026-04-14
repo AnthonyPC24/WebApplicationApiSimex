@@ -17,3 +17,90 @@ GET {{WebApplicationApiSimex_HostAddress}}/api/usuaris/resumen
 GET {{WebApplicationApiSimex_HostAddress}}/api/usuaris/rol/{{idRol}}
 
 ###
+
+GET {{WebApplicationApiSimex_HostAddress}}/api/ofertes
+
+###
+
+GET {{WebApplicationApiSimex_HostAddress}}/api/incoterms
+
+###
+
+GET {{WebApplicationApiSimex_HostAddress}}/api/tipustransports
+
+###
+
+GET {{WebApplicationApiSimex_HostAddress}}/api/tipusincoterms
+
+###
+
+GET {{WebApplicationApiSimex_HostAddress}}/api/tipustransports
+
+###
+
+GET {{WebApplicationApiSimex_HostAddress}}/api/tipustransports
+
+###
+
+POST {{WebApplicationApiSimex_HostAddress}}/api/ofertes
+Content-Type: application/json
+
+{
+    "tipusTransportId": 1,
+    "tipusFluxeId": 2,
+    "tipusCarregaId": 2,
+    "incotermId": 2,
+    "clientId": 4,
+    "agentComercialId": 4,
+    "transportistaId": 1,
+    "pesBrut": 1200.00,
+    "volum": 12.00,
+    "tipusValidacioId": 2,
+    "portOrigenId": 2,
+    "portDestiId": 13,
+    "aeroportOrigenId": null,
+    "aeroportDestiId": null,
+    "liniaTransportMaritimId": 1,
+    "estatOfertaId": 1,
+    "operadorId": 1,
+    "dataCreacio": "2026-04-10",
+    "dataValidessaInicial": "2026-04-10",
+    "dataValidessaFina": "2026-05-10",
+    "raoRebuig": null,
+    "tipusContenidorId": 1
+}
+
+###
+
+GET {{WebApplicationApiSimex_HostAddress}}/api/rols
+
+###
+
+GET {{WebApplicationApiSimex_HostAddress}}/api/incoterms
+
+###
+
+GET {{WebApplicationApiSimex_HostAddress}}/api/usuaris/rol/{{idRol}}
+
+###
+
+GET {{WebApplicationApiSimex_HostAddress}}/api/transportistes
+
+###
+
+GET {{WebApplicationApiSimex_HostAddress}}/api/tipusvalidacions
+
+###
+
+GET {{WebApplicationApiSimex_HostAddress}}/api/tipuscontenidors
+
+###
+
+GET {{WebApplicationApiSimex_HostAddress}}/api/tipusvalidacions
+
+###
+
+@clienteId=3
+GET {{WebApplicationApiSimex_HostAddress}}/api/ofertes/Cliente/{{clienteId}}
+
+###

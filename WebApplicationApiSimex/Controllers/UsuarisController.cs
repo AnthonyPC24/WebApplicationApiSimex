@@ -132,6 +132,7 @@ namespace WebApplicationApiSimex.Controllers
                 .Where(u => u.RolId == idRol) 
                 .Select(u => new
                 {
+                    Id = u.Id,
                     Nom = u.Nom,
                     Cognoms = u.Cognoms,
                     Empresa = u.Empresa,

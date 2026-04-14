@@ -57,27 +57,27 @@ public partial class Oferte
 
     public virtual Aeroport? AeroportOrigen { get; set; }
 
-    public virtual EstatsOferte EstatOferta { get; set; } = null!;
+    public virtual EstatsOferte? EstatOferta { get; set; } = null!;
 
-    public virtual Incoterm Incoterm { get; set; } = null!;
+    public virtual Incoterm? Incoterm { get; set; } = null!;
 
     public virtual LiniesTransportMaritim? LiniaTransportMaritim { get; set; }
 
-    public virtual Usuari Operador { get; set; } = null!;
+    public virtual Usuari? Operador { get; set; } = null!;
 
     public virtual Port? PortDesti { get; set; }
 
     public virtual Port? PortOrigen { get; set; }
 
-    public virtual TipusCarrega TipusCarrega { get; set; } = null!;
+    public virtual TipusCarrega? TipusCarrega { get; set; } = null!;
 
     public virtual TipusContenidor? TipusContenidor { get; set; }
 
-    public virtual TipusFlux TipusFluxe { get; set; } = null!;
+    public virtual TipusFlux? TipusFluxe { get; set; } = null!;
 
-    public virtual TipusTransport TipusTransport { get; set; } = null!;
+    public virtual TipusTransport? TipusTransport { get; set; } = null!;
 
-    public virtual TipusValidacion TipusValidacio { get; set; } = null!;
+    public virtual TipusValidacion? TipusValidacio { get; set; } = null!;
 
     public virtual Transportiste? Transportista { get; set; }
 }
