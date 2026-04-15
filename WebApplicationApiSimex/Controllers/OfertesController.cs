@@ -108,10 +108,12 @@ namespace WebApplicationApiSimex.Controllers
         [HttpGet("Cliente/{clienteId}")]
         public async Task<ActionResult<IEnumerable<Oferte>>> GetOfertesByCliente(int clienteId)
         {
-            return await _context.Ofertes
-                .Where(o=> o.ClientId == clienteId)
-                .OrderByDescending(o=> o.Id)
+            var ofertas = await _context.Ofertes
+                .Where(o => o.ClientId == clienteId)
+                .OrderByDescending(o => o.Id)
                 .ToListAsync();
+
+            return ofertas;
         }
 
         // GET: api/Ofertes/Agente/7
