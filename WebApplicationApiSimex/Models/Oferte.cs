@@ -80,4 +80,7 @@ public partial class Oferte
     public virtual TipusValidacion? TipusValidacio { get; set; } = null!;
 
     public virtual Transportiste? Transportista { get; set; }
+
+    public int? EstatEnvioId { get; set; }
+    public virtual EstatEnvio? EstatEnvio { get; set; }
 }

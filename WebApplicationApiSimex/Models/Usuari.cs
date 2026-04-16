@@ -19,6 +19,10 @@ public partial class Usuari
 
     public int RolId { get; set; }
 
+    public string? Telefon { get; set; }
+
+    public string? DniFoto { get; set; }
+
     public virtual ICollection<Oferte> Ofertes { get; set; } = new List<Oferte>();
 
     public virtual Rol Rol { get; set; } = null!;
