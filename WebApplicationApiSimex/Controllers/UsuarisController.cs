@@ -155,17 +155,55 @@ public async Task<IActionResult> Login([FromBody] LoginRequest login)
 
     return Ok(user); // 200
 }
-[HttpGet("contadors/{operadorId}")]
-public async Task<IActionResult> GetContadors(int operadorId)
+
+[HttpGet("contadors/{clientId}")]
+public async Task<IActionResult> GetContadors(int clientId)
 {
-    var contadors = await _context.Ofertes
-        .Where(o => o.OperadorId == operadorId && o.EstatEnvioId != null)
-        .GroupBy(o => o.EstatEnvio!.Nom)
+    var contadors = await _context.Envios
+        .Where(e => e.ClienteId == clientId && e.EstadoEnvio != null)  // ← filtra nulls
+        .GroupBy(e => e.EstadoEnvio)
         .Select(g => new { Estat = g.Key, Count = g.Count() })
         .ToListAsync();
 
     return Ok(contadors);
 }
+
+[HttpPatch("perfil/{id}")]
+public async Task<IActionResult> UpdatePerfil(int id, [FromBody] UpdatePerfilRequest request)
+{
+    var usuari = await _context.Usuaris.FindAsync(id);
+    if (usuari == null) return NotFound();
+
+    if (request.Nom != null) usuari.Nom = request.Nom;
+    if (request.Empresa != null) usuari.Empresa = request.Empresa;
+    if (request.Telefon != null) usuari.Telefon = request.Telefon;
+
+    await _context.SaveChangesAsync();
+    return Ok(usuari);
+}
+
+// Subir DNI
+[HttpPatch("dni/{id}")]
+public async Task<IActionResult> UpdateDni(int id, [FromBody] UpdatePerfilRequest request)
+{
+    var usuari = await _context.Usuaris.FindAsync(id);
+    if (usuari == null) return NotFound();
+
+    usuari.DniFoto = request.DniFoto;
+    await _context.SaveChangesAsync();
+    return Ok();
+}
+
+// Descargar DNI
+[HttpGet("dni/{id}")]
+public async Task<IActionResult> GetDni(int id)
+{
+    var usuari = await _context.Usuaris.FindAsync(id);
+    if (usuari == null || usuari.DniFoto == null) return NotFound();
+    return Ok(new { dniFoto = usuari.DniFoto });
+}
+
+
         
     }
 }

@@ -55,6 +55,8 @@ public partial class Simex09Context : DbContext
 
     public virtual DbSet<EstatEnvio> EstatsEnvio { get; set; }
 
+    public virtual DbSet<Envio> Envios { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=51.83.192.177;Database=simex09;User Id=simex09;Password=Db@Secure_26!xP;TrustServerCertificate=True;");
@@ -433,6 +435,13 @@ public partial class Simex09Context : DbContext
                 .HasForeignKey(d => d.RolId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_usuaris_rols");
+
+                entity.Property(e => e.Telefon)
+                .HasMaxLength(20)
+                .HasColumnName("telefon");
+
+                entity.Property(e => e.DniFoto)
+                .HasColumnName("dni_foto");
         });
 
         modelBuilder.Entity<EstatEnvio>(entity =>
@@ -441,7 +450,30 @@ public partial class Simex09Context : DbContext
             entity.Property(e => e.Nom).HasMaxLength(50);
         });
 
+        modelBuilder.Entity<Envio>(entity =>
+{
+    entity.ToTable("envios");
+    entity.Property(e => e.Id).HasColumnName("id");
+    entity.Property(e => e.Origen).HasMaxLength(100).HasColumnName("origen");
+    entity.Property(e => e.Destino).HasMaxLength(100).HasColumnName("destino");
+    entity.Property(e => e.EstadoEnvio).HasMaxLength(50).HasColumnName("estado_envio");
+    entity.Property(e => e.OfertaId).HasMaxLength(50).HasColumnName("oferta_id");
+    entity.Property(e => e.ContenidoEnvio).HasMaxLength(255).HasColumnName("contenido_envio");
+    entity.Property(e => e.MetodoTransporte).HasMaxLength(50).HasColumnName("metodo_transporte");
+    entity.Property(e => e.TipoDivisa).HasMaxLength(10).HasColumnName("tipo_divisa");
+    entity.Property(e => e.FechaPedido).HasColumnName("fecha_pedido");
+    entity.Property(e => e.AgenteComercial).HasMaxLength(100).HasColumnName("agente_comercial");
+    entity.Property(e => e.Ruta).HasMaxLength(255).HasColumnName("ruta");
+    entity.Property(e => e.PesoKg).HasColumnType("numeric(18,2)").HasColumnName("peso_kg");
+    entity.Property(e => e.Incoterm).HasMaxLength(10).HasColumnName("incoterm");
+    entity.Property(e => e.Urgencia).HasMaxLength(20).HasColumnName("urgencia");
+    entity.Property(e => e.Compania).HasMaxLength(100).HasColumnName("compania");
+    entity.Property(e => e.ClienteId).HasColumnName("cliente_id"); // nombre real en BD
+});
+
         OnModelCreatingPartial(modelBuilder);
+
+        
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
