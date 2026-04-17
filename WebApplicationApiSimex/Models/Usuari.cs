@@ -21,7 +21,13 @@ public partial class Usuari
 
     public string? Telefon { get; set; }
 
+    public string? Cif { get; set; }
+
+    public bool? Actiu { get; set; }
+
     public string? DniFoto { get; set; }
+
+    public virtual ICollection<Envio> Envios { get; set; } = new List<Envio>();
 
     public virtual ICollection<Oferte> Ofertes { get; set; } = new List<Oferte>();
 
