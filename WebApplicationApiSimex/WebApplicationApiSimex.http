@@ -104,3 +104,8 @@ GET {{WebApplicationApiSimex_HostAddress}}/api/tipusvalidacions
 GET {{WebApplicationApiSimex_HostAddress}}/api/ofertes/Cliente/{{clienteId}}
 
 ###
+
+@id=1
+GET {{WebApplicationApiSimex_HostAddress}}/api/ofertes/{{id}}/Seguimiento
+
+###
