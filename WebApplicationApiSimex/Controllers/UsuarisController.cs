@@ -195,7 +195,7 @@ public async Task<IActionResult> UpdateDni(int id, [FromBody] UpdatePerfilReques
     return Ok();
 }
 
-// Descargar DNI
+// Descargar DNI m
 [HttpGet("dni/{id}")]
 public async Task<IActionResult> GetDni(int id)
 {
