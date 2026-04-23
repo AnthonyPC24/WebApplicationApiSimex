@@ -75,13 +75,24 @@ namespace WebApplicationApiSimex.Controllers
         // POST: api/Ofertes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Oferte>> PostOferte(Oferte oferte)
-        {
-            _context.Ofertes.Add(oferte);
-            await _context.SaveChangesAsync();
+public async Task<ActionResult<Oferte>> PostOferte([FromBody] Oferte oferte)
+{
+    // Limpiar el ModelState para ignorar errores de navegación
+    ModelState.Clear();
 
-            return CreatedAtAction("GetOferte", new { id = oferte.Id }, oferte);
-        }
+    oferte.Incoterm = null!;
+    oferte.Operador = null!;
+    oferte.TipusFluxe = null!;
+    oferte.EstatOferta = null!;
+    oferte.TipusCarrega = null!;
+    oferte.TipusTransport = null!;
+    oferte.TipusValidacio = null!;
+
+    _context.Ofertes.Add(oferte);
+    await _context.SaveChangesAsync();
+
+    return CreatedAtAction("GetOferte", new { id = oferte.Id }, oferte);
+}
 
         // DELETE: api/Ofertes/5
         [HttpDelete("{id}")]
@@ -189,55 +200,137 @@ namespace WebApplicationApiSimex.Controllers
             return result;
         }
 
-        [HttpPost("{id}/GuardarSeguimiento")]
-        public async Task<IActionResult> GuardarSeguimiento(int id, [FromBody] List<PasoSeguimientoDTO> pasosActualizados)
-        {
-            IActionResult result;
+        
 
-            try
+       [HttpPost("{id}/GuardarSeguimiento")]
+public async Task<IActionResult> GuardarSeguimiento(int id, [FromBody] List<PasoSeguimientoDTO> pasosActualizados)
+{
+    IActionResult result;
+    try
+    {
+        if (pasosActualizados == null || !pasosActualizados.Any())
+        {
+            result = BadRequest(new { mensaje = "No se han recibido pasos" });
+        }
+        else if (!OferteExists(id))
+        {
+            result = NotFound(new { mensaje = "La oferta no existe" });
+        }
+        else
+        {
+            foreach (var item in pasosActualizados)
             {
-                if (pasosActualizados == null || !pasosActualizados.Any())
+                var seguimiento = await _context.SeguimentOfertes
+                    .FirstOrDefaultAsync(s => s.OfertaId == id && s.TrackingStepId == item.TrackingStepId);
+
+                if (seguimiento != null)
                 {
-                    result = BadRequest(new { mensaje = "No se han recibido pasos" });
-                }
-                else if (!OferteExists(id))
-                {
-                    result = NotFound(new { mensaje = "La oferta no existe" });
+                    seguimiento.EstatId = item.EstadoActualId ?? 1;
+                    seguimiento.DataActualitzacio = DateTime.Now;
                 }
                 else
                 {
-                    foreach (var item in pasosActualizados)
+                    var nuevo = new SeguimentOferte
                     {
-                        var seguimiento = await _context.SeguimentOfertes
-                            .FirstOrDefaultAsync(s => s.OfertaId == id && s.TrackingStepId == item.TrackingStepId);
-
-                        if (seguimiento != null)
-                        {
-                            seguimiento.EstatId = item.EstadoActualId ?? 1;
-                            seguimiento.DataActualitzacio = DateTime.Now;
-                        }
-                        else
-                        {
-                            _context.SeguimentOfertes.Add(new SeguimentOferte
-                            {
-                                OfertaId = id,
-                                TrackingStepId = item.TrackingStepId,
-                                EstatId = item.EstadoActualId ?? 1,
-                                DataActualitzacio = DateTime.Now
-                            });
-                        }
-                    }
-
-                    await _context.SaveChangesAsync();
-                    result = Ok(new { mensaje = "Seguimiento actualizado" });
+                        OfertaId = id,
+                        TrackingStepId = item.TrackingStepId,
+                        EstatId = item.EstadoActualId ?? 1,
+                        DataActualitzacio = DateTime.Now
+                    };
+                    // ← nulleamos las navegaciones igual que en PostOferte
+                    nuevo.Estat = null!;
+                    nuevo.Oferta = null!;
+                    nuevo.TrackingStep = null!;
+                    _context.SeguimentOfertes.Add(nuevo);
                 }
             }
-            catch (Exception ex)
-            {
-                result = StatusCode(500, new { mensaje = "Error al guardar", error = ex.Message });
+
+            // Si todos finalizados, marcar envío como Finalizado
+            bool todosFinalizados = pasosActualizados.All(p => p.EstadoActualId == 3);
+bool algunoAvanzado = pasosActualizados.Any(p => p.EstadoActualId == 2 || p.EstadoActualId == 3);
+
+var envio = await _context.Envios.FirstOrDefaultAsync(e => e.OfertaId == id.ToString());
+if (envio != null)
+{
+    if (todosFinalizados)
+        envio.EstadoEnvio = "Entregado hoy";
+    else if (algunoAvanzado)
+        envio.EstadoEnvio = "En tránsito";
+    else
+        envio.EstadoEnvio = "En preparación";
+    
             }
 
-            return result;
+            await _context.SaveChangesAsync();
+            result = Ok(new { mensaje = "Seguimiento actualizado" });
         }
+    }
+    catch (Exception ex)
+    {
+        result = StatusCode(500, new { mensaje = "Error al guardar", error = ex.Message, inner = ex.InnerException?.Message });
+    }
+    return result;
+}
+
+ [HttpPatch("{id}/estat")]
+public async Task<IActionResult> UpdateEstatOferta(int id, [FromBody] UpdateEstatRequest request)
+{
+    var oferta = await _context.Ofertes.FindAsync(id);
+    if (oferta == null) return NotFound();
+
+    oferta.EstatOfertaId = request.EstatOfertaId;
+    if (request.RaoRebuig != null) oferta.RaoRebuig = request.RaoRebuig;
+
+    if (request.EstatOfertaId == 2)
+    {
+        var yaExiste = await _context.Envios
+            .AnyAsync(e => e.OfertaId == id.ToString());
+
+        if (!yaExiste)
+        {
+            var usuario = await _context.Usuaris.FindAsync(oferta.ClientId);
+            var tipusTransport = await _context.TipusTransports.FindAsync(oferta.TipusTransportId);
+            var portOrigen = oferta.PortOrigenId != null 
+    ? await _context.Ports.FindAsync(oferta.PortOrigenId) : null;
+var portDesti = oferta.PortDestiId != null 
+    ? await _context.Ports.FindAsync(oferta.PortDestiId) : null;
+var aeroOrigen = oferta.AeroportOrigenId != null 
+    ? await _context.Aeroports.FindAsync(oferta.AeroportOrigenId) : null;
+var aeroDesti = oferta.AeroportDestiId != null 
+    ? await _context.Aeroports.FindAsync(oferta.AeroportDestiId) : null;
+
+var origen = portOrigen?.Nom ?? aeroOrigen?.Nom ?? "";
+var destino = portDesti?.Nom ?? aeroDesti?.Nom ?? "";
+
+            var incoterm = await _context.Incoterms
+         .Include(i => i.TipusInconterm)
+            .FirstOrDefaultAsync(i => i.Id == oferta.IncotermId);
+        var incotermCodi = incoterm?.TipusInconterm?.Codi ?? "FOB";
+
+            var envio = new Envio
+{
+    OfertaId = id.ToString(),
+    ClienteId = oferta.ClientId,
+    EstadoEnvio = "En preparación",
+    FechaPedido = DateOnly.FromDateTime(DateTime.Now),
+    Cliente = usuario?.Nom ?? "Cliente",
+    MetodoTransporte = tipusTransport?.Tipus ?? "Marítimo",
+    Origen = origen,                              
+    Destino = destino,                            
+    ContenidoEnvio = oferta.Comentaris ?? "",     
+    TipoDivisa = "EUR",
+    Ruta = $"{origen} → {destino}",              
+    PesoKg = oferta.PesBrut ?? 0,
+    Incoterm = incotermCodi,
+    Urgencia = "Media",
+    Compania = usuario?.Empresa ?? ""
+};
+            _context.Envios.Add(envio);
+        }
+    }
+
+    await _context.SaveChangesAsync();
+    return Ok();
+}
     }
 }
