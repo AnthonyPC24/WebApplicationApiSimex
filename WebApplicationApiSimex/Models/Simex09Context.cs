@@ -79,6 +79,8 @@ public partial class Simex09Context : DbContext
 
     public virtual DbSet<Usuari> Usuaris { get; set; }
 
+    public virtual DbSet<Partida> Partides { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("server=51.83.192.177;Database=simex09;User id=simex09;Password=Db@Secure_26!xP;Encrypt=True;TrustServerCertificate=True");

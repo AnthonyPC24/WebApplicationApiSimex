@@ -19,6 +19,8 @@ public partial class Usuari
 
     public int RolId { get; set; }
 
+    public int? Puntuacion { get; set; }
+
     public string? Telefon { get; set; }
 
     public string? Cif { get; set; }
@@ -32,4 +34,6 @@ public partial class Usuari
     public virtual ICollection<Oferte> Ofertes { get; set; } = new List<Oferte>();
 
     public virtual Rol Rol { get; set; } = null!;
+
+
 }

@@ -204,7 +204,63 @@ public async Task<IActionResult> GetDni(int id)
     return Ok(new { dniFoto = usuari.DniFoto });
 }
 
+// DylanExtra
+[HttpGet("nombres")]
+public async Task<IActionResult> GetNombres()
+{
+    var nombres = await _context.Usuaris
+        .Select(u => u.Nom) //coge los nombres y los devuelve en forma de listas
+        .ToListAsync();
+    return Ok(nombres);
+}
 
-        
-    }
+
+[HttpPost("partida")]
+public async Task<IActionResult> PostPartida([FromBody] PartidaRequest request)
+{
+    var partida = new Partida
+    {
+        UsuariId   = request.UsuariId,
+        Puntuacion = request.Puntuacion,
+        Data       = DateTime.Now
+    };
+
+    _context.Partides.Add(partida);
+    await _context.SaveChangesAsync();
+    return Ok();
+}
+
+
+[HttpPut("record/{id}")]
+public async Task<IActionResult> UpdateRecord(int id, [FromBody] RecordRequest request)
+{
+    var usuari = await _context.Usuaris.FindAsync(id); //busca a usuario en la base de datos por su id
+    if (usuari == null) return NotFound();
+
+    usuari.Puntuacion = request.Puntuacion;
+    await _context.SaveChangesAsync();
+    return Ok();
+}
+
+
+[HttpGet("record/{id}")]
+public async Task<IActionResult> GetRecord(int id)
+{
+    var usuari = await _context.Usuaris.FindAsync(id);
+    if (usuari == null) return NotFound();
+    return Ok(usuari.Puntuacion ?? 0); //Puede ser que un usuario aun no tenga puntuacion y sea null asi que si es el caso pongo el 0 al lado de los ??
+}
+    
+
+[HttpDelete("record/{id}")]
+public async Task<IActionResult> DeleteRecord(int id)
+{
+    var usuari = await _context.Usuaris.FindAsync(id);
+    if (usuari == null) return NotFound();
+
+    usuari.Puntuacion = 0;
+    await _context.SaveChangesAsync();
+    return Ok();
+}
+}
 }
